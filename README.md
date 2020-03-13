@@ -1,2 +1,2 @@
-# moonshot
-A telegram bot for downloading and uploading Instagram images and video behind the scenes.
+# Project Moonshot
+A telegram bot for downloading and uploading Instagram images and video behind the scenes. The need for this project emerged when a couple of our memesters were unable to see instagram images and videos because they had not subscribed to the channel. Many of our members are do not take please in subscribing to those channels as it ruins their instagram feed. This bot shall make use of a single account and will immediately fetch images and videos based off the link posted on the group.
