@@ -1,7 +1,9 @@
-import express from 'express';
-import bodyParser from 'body-parser'
+const Telegraf = require('telegraf')
 
-const app = express();
+// BOT TOKEN : 1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU
 
-// applying middleware
-app.use(bodyParser.json())
+const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU')
+bot.start((ctx) => ctx.reply('Hello'))
+bot.help((ctx) => ctx.reply('Help message'))
+bot.on('message', (ctx) => ctx.telegram.sendCopy(ctx.chat.id, ctx.message, Extra.markup(keyboard)))
+bot.launch()
