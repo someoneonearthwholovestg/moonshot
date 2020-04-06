@@ -1,24 +1,9 @@
-// const Telegraf = require('telegraf')
-//
-// // BOT TOKEN : 1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU
-//
-// const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU')
-// bot.start((ctx) => ctx.reply('Hello'))
-// bot.help((ctx) => ctx.reply('Help message'))
-// bot.on('message', (ctx) => ctx.telegram.sendCopy(ctx.chat.id, ctx.message, Extra.markup(keyboard)))
-// bot.launch()
-
-
 const Telegraf = require('telegraf');
 const sqlite3 = require('sqlite3').verbose();
 
 // BOT TOKEN : 1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU
 
 const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU');
-// bot.start((ctx) => ctx.reply('Hello'))
-// bot.help((ctx) => ctx.reply('Help message'))
-// bot.on('message', (ctx) => ctx.telegram.sendCopy(ctx.chat.id, ctx.message, Extra.markup(keyboard)))
-
 
 bot.command('/register', (ctx) => {
 
@@ -66,7 +51,7 @@ const run = function run() {
     const zmq = require("zeromq"),
         sock = zmq.socket("sub");
 
-    sock.connect("tcp://192.168.100.2:1234");
+    sock.connect("tcp://127.0.0.1:1234");
     sock.subscribe("experiment");
     console.log("Subscriber connected to port 1234");
 
