@@ -4,7 +4,8 @@
   "description": "A telegram bot for downloading and uploading Instagram images and video behind the scenes. The need for this project emerged when a couple of our memesters were unable to see instagram images and videos because they had not subscribed to the channel.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +15,7 @@
     "telegram",
     "nodejs"
   ],
-  "author": "Aakash Mallik",
+  "author": "Aakash Mallik, Shweta Suman",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AakashMallik/moonshot/issues"

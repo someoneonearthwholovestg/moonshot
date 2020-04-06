@@ -1,8 +1,8 @@
 const Telegraf = require('telegraf');
 const sqlite3 = require('sqlite3').verbose();
-const zmq = require("zeromq"),
+const zmq = require("zeromq");
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_KEY);
+const bot = new Telegraf(process.env.TELEGRAM_BOT_KEY || '1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU');
 const db = new sqlite3.Database('./moonshot.db'); //Database path
 db.run("CREATE TABLE IF NOT EXISTS telegram (id TEXT NOT NULL PRIMARY KEY)");
 
@@ -16,11 +16,9 @@ bot.command('/register', (ctx) => {
         if (err) {
             throw err;
         }
-        console.log('rows', rows);
         if (rows && rows.length) {
             rows.forEach((row) => {
                 groupId = row.id;
-                console.log(row.id);
             });
             return bot.telegram.sendMessage(groupId, 'You have already been registered')
         } else {
@@ -48,19 +46,12 @@ const run = function run() {
         sock = zmq.socket("pull");
 
     sock.bindSync("tcp://*:1234");
-    // sock.subscribe("experiment");
-    console.log("Subscriber connected to port 1234");
 
     sock.on("message", function (message) {
-        console.log(
-            message,
-            message.toString()
-        );
         db.all('select id from telegram', [], (err, rows) => {
             if (err) {
                 throw err;
             }
-            console.log('rows', rows);
             if (rows && rows.length) {
                 rows.forEach((row) => {
                     let finalStr = '';
@@ -70,7 +61,6 @@ const run = function run() {
 `;
                     });
                     bot.telegram.sendMessage(row.id, finalStr, { parse_mode: 'HTML' });
-                    console.log(finalStr);
                 });
             }
         });
