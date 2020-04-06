@@ -1,14 +1,14 @@
 const Telegraf = require('telegraf');
 const sqlite3 = require('sqlite3').verbose();
-
-// BOT TOKEN : 1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU
+const zmq = require("zeromq"),
 
 const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU');
+const db = new sqlite3.Database('./moonshot.db'); //Database path
+db.run("CREATE TABLE IF NOT EXISTS telegram (id TEXT NOT NULL PRIMARY KEY)");
+
+
 
 bot.command('/register', (ctx) => {
-
-    const db = new sqlite3.Database('./moonshot.db'); //Database path
-    db.run("CREATE TABLE IF NOT EXISTS telegram (id TEXT NOT NULL PRIMARY KEY)");
 
     let groupId = null;
 
@@ -17,20 +17,18 @@ bot.command('/register', (ctx) => {
             throw err;
         }
         console.log('rows', rows);
-        if (rows && rows.length){
+        if (rows && rows.length) {
             rows.forEach((row) => {
                 groupId = row.id;
                 console.log(row.id);
             });
-            db.close();
             return bot.telegram.sendMessage(groupId, 'You have already been registered')
         } else {
-            db.run(`insert into telegram(id) VALUES(?)`, [ctx.chat.id.toString()], function(err) {
+            db.run(`insert into telegram(id) VALUES(?)`, [ctx.chat.id.toString()], function (err) {
                 if (err) {
                     throw err.message;
                 }
             });
-            db.close();
             return bot.telegram.sendMessage(ctx.chat.id, 'Registered')
         }
     });
@@ -38,7 +36,6 @@ bot.command('/register', (ctx) => {
 
 
 bot.command('/deregister', (ctx) => {
-    const db = new sqlite3.Database('./moonshot.db'); //Database path
     db.run('delete from telegram where id = ?', [ctx.chat.id.toString()], (err) => {
         if (err) {
             throw err.message;
@@ -48,20 +45,17 @@ bot.command('/deregister', (ctx) => {
 });
 
 const run = function run() {
-    const zmq = require("zeromq"),
-        sock = zmq.socket("sub");
+        sock = zmq.socket("pull");
 
-    sock.connect("tcp://127.0.0.1:1234");
-    sock.subscribe("experiment");
+    sock.bindSync("tcp://192.168.100.21:1234");
+    // sock.subscribe("experiment");
     console.log("Subscriber connected to port 1234");
 
-    sock.on("message", function (topic, message) {
+    sock.on("message", function (message) {
         console.log(
-            topic.toString(),
+            message,
             message.toString()
         );
-        const db = new sqlite3.Database('./moonshot.db'); //Database path
-        // let groupId = null;
         db.all('select id from telegram', [], (err, rows) => {
             if (err) {
                 throw err;
@@ -75,7 +69,7 @@ const run = function run() {
                         finalStr += `<b>${eachKey}</b> : ${msgObj[eachKey]}
 `;
                     });
-                    bot.telegram.sendMessage(row.id, finalStr, {parse_mode: 'HTML'});
+                    bot.telegram.sendMessage(row.id, finalStr, { parse_mode: 'HTML' });
                     console.log(finalStr);
                 });
             }
