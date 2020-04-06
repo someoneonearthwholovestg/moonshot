@@ -45,7 +45,7 @@ bot.command('/deregister', (ctx) => {
 const run = function run() {
         sock = zmq.socket("pull");
 
-    sock.bindSync("tcp://*:1234");
+    sock.bindSync("tcp://*:80");
 
     sock.on("message", function (message) {
         db.all('select id from telegram', [], (err, rows) => {
