@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const run = async (bot, db, message) => {
     try {
         db.all('select id from telegram', [], (err, rows) => {
@@ -65,3 +66,10 @@ module.exports = {
 
 
 
+=======
+const setupCommands = (bot) => {
+    return bot;
+}
+
+export { setupCommands };
+>>>>>>> 23ecb5ec30d61bdaeaaa88e058768cc18148052f

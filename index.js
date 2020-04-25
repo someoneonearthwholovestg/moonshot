@@ -47,14 +47,14 @@ bot.command('/register', (ctx) => {
             throw err;
         }
         console.log('rows', rows);
-        if (rows && rows.length){
+        if (rows && rows.length) {
             rows.forEach((row) => {
                 groupId = row.id;
                 console.log(row.id);
             });
             return bot.telegram.sendMessage(groupId, 'You have already been registered')
         } else {
-            db.run(`insert into telegram(id) VALUES(?)`, [ctx.chat.id.toString()], function(err) {
+            db.run(`insert into telegram(id) VALUES(?)`, [ctx.chat.id.toString()], function (err) {
                 if (err) {
                     throw err.message;
                 }
