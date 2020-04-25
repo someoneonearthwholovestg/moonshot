@@ -1,12 +1,13 @@
 const express = require('express');
 const http = require('http');
+const config = require('config');
 const redirect = require('express-redirect');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Telegraf = require('telegraf');
-const {run} = require('./commands/index');
+const {initialise} = require('./utils/init');
+const {pipelineRoutes} = require('./routes/pipeline_routes');
+const {botRoutes} = require('./routes/bot_routes');
 
-const sqlite3 = require('sqlite3').verbose();
 
 const router = express.Router();
 const app = express();
@@ -32,74 +33,15 @@ app.use((req, res, next) => {
     return next();
 });
 
+const {bot,db} = initialise();
 
-const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU');
-
-const db = new sqlite3.Database('./moonshot.db'); //Database path
-db.run("CREATE TABLE IF NOT EXISTS telegram (id TEXT NOT NULL PRIMARY KEY)");
-
-bot.command('/register', (ctx) => {
-
-    let groupId = null;
-
-    db.all('select id from telegram where id = ?', [ctx.chat.id.toString()], (err, rows) => {
-        if (err) {
-            throw err;
-        }
-        console.log('rows', rows);
-        if (rows && rows.length) {
-            rows.forEach((row) => {
-                groupId = row.id;
-                console.log(row.id);
-            });
-            return bot.telegram.sendMessage(groupId, 'You have already been registered')
-        } else {
-            db.run(`insert into telegram(id) VALUES(?)`, [ctx.chat.id.toString()], function (err) {
-                if (err) {
-                    throw err.message;
-                }
-            });
-            return bot.telegram.sendMessage(ctx.chat.id, 'Registered')
-        }
-    });
-});
-
-bot.command('/deregister', (ctx) => {
-    db.run('delete from telegram where id = ?', [ctx.chat.id.toString()], (err) => {
-        if (err) {
-            throw err.message;
-        }
-        return bot.telegram.sendMessage(ctx.chat.id, 'Deregistered')
-    })
-});
+pipelineRoutes(app, bot, db);
+botRoutes(bot, db);
 
 bot.launch();
 
-
-app.get('/', (req,res,next) => {
-    res.send('Hola People!')
-});
-
-app.get('/sendMessage', async (req,res,next) => {
-    console.log('req,res', req.query.message);
-    try {
-        if (req.query && req.query.message){
-            console.log(
-                req.query.message,
-                req.query.message.toString()
-            );
-            await run(bot, db, req.query.message);
-            return res.status(200).send('Message sent')
-        }
-        return res.status(404).send('No message available')
-    } catch (ex) {
-        return res.send(ex);
-    }
-});
-
-
-server.listen(8000, () => {
-    console.log('Server listening at http://%s:%s', 'localhost', 8000);
+server.listen(config.port, () => {
+    console.log('Server listening at http://%s:%s', config.host, config.port);
 });
 
 

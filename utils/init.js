@@ -1,17 +1,19 @@
-const Telegraf = require('telegraf');
-
 const sqlite3 = require('sqlite3').verbose();
+const Telegraf = require('telegraf');
+const config = require('config');
 
-const initCommand = () => {
-    console.log('hello');
-    const bot = new Telegraf('1060336780:AAHTn8MWDA4bHK97D4nEJbGPrhiri8ACFpU');
+const initialise = () => {
 
-    const db = new sqlite3.Database('../moonshot.db'); //Database path
+    const db = new sqlite3.Database('./moonshot.db'); //Database path
     db.run("CREATE TABLE IF NOT EXISTS telegram (id TEXT NOT NULL PRIMARY KEY)");
-    bot.launch();
+
+    const bot = new Telegraf(config.botId);
+    console.log(bot, db);
+
+    return {bot, db};
 };
 
 
 module.exports = {
-    initCommand
+    initialise
 } ;
